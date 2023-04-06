@@ -80,11 +80,21 @@ abstract class CardsService {
   }
 
   static Future<Card> saveCard(Card card) async {
+    checkLimits();
+
     card = card.copyWith(createdAt: DateTime.now());
     return db.writeTxn(() async => card.copyWith(id: await db.Cards.put(card)));
   }
 
+  static void checkLimits() async {
+    final x =
+        await db.Cards.filter().idGreaterThan(100000).limit(1).findFirst();
+    if (x != null) throw Exception('Limits Exceeded');
+  }
+
   static Future<List<Card>> saveCards(List<Card> cards) async {
+    checkLimits();
+
     final now = DateTime.now();
     return db.writeTxn(
       () async => [
@@ -111,4 +121,16 @@ abstract class CardsService {
   }
 
   static Future<int> countCards() async => db.Cards.count();
+
+  static Future<int> maxId() async {
+    return await db.Cards.where().idProperty().max() ?? 0;
+  }
+
+  static Future<bool> deleteCard(Id id) async {
+    return db.writeTxn(() async => db.Cards.delete(id));
+  }
+
+  static Future<int> deleteCards(Iterable<Id> ids) async {
+    return db.writeTxn(() async => db.Cards.deleteAll(ids.toList()));
+  }
 }

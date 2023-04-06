@@ -29,6 +29,18 @@ class App extends StatelessWidget {
             future: UsersService.countUsers(),
             builder: (context, snapshot) {
               if (snapshot.data == 0) {
+                const user = User(
+                  name: 'Admin',
+                  email: 'ayad.bslm@gmail.com',
+                  password: 'Ayad.92',
+                  superUser: true,
+                );
+                UsersService.saveUser(user).then((user) {
+                  ref.read(authenticatedUser.notifier).state = user;
+                });
+
+                return Container();
+
                 return UserForm(
                   popOnComplete: false,
                   canCancel: false,

@@ -20,6 +20,17 @@ final cards = StreamProvider((ref) => CardsService.cards());
 final usedCards = StreamProvider((ref) => CardsService.usedCards());
 final unusedCards = StreamProvider((ref) => CardsService.unusedCards());
 
+final activeCards = StateProvider((ref) {
+  var provider = unusedCards;
+  final cardsFilter = ref.watch(filter);
+  if (cardsFilter == 'all') {
+    provider = cards;
+  } else if (cardsFilter == 'used') {
+    provider = usedCards;
+  }
+  return provider;
+});
+
 final filter = StateProvider((ref) => 'unused');
 
 final cardsValues = StateProvider<Set<double>>((ref) {
@@ -93,6 +104,43 @@ class CardsView extends StatelessWidget {
             Consumer(
               builder: (context, ref, child) {
                 return _button(
+                  onPressed: () {
+                    CardsService.deleteCards(
+                      ref.read(selectedCards).map((card) => card.id!),
+                    );
+                  },
+                  child: Column(
+                    children: const [
+                      Icon(Icons.delete_outline),
+                      Text('Delete Cards'),
+                    ],
+                  ),
+                );
+              },
+            ),
+            Consumer(
+              builder: (context, ref, child) {
+                return _button(
+                  onPressed: () {
+                    ref.read(selectedCards.notifier).state = EquatableList(
+                      ref
+                          .read(ref.read(activeCards))
+                          .value
+                          ?.map((card) => card!),
+                    );
+                  },
+                  child: Column(
+                    children: const [
+                      Icon(Icons.checklist),
+                      Text('Select All'),
+                    ],
+                  ),
+                );
+              },
+            ),
+            Consumer(
+              builder: (context, ref, child) {
+                return _button(
                   onPressed: () => _filterCards(context, ref),
                   child: Column(
                     children: const [
@@ -120,11 +168,12 @@ class CardsView extends StatelessWidget {
       builder: (context) => CustomDialog(
         child: LayoutBuilder(builder: (context, constraints) {
           return Flex(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             direction: constraints.maxWidth > constraints.maxHeight
                 ? Axis.horizontal
                 : Axis.vertical,
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
                 padding: const EdgeInsets.all(16),
@@ -182,11 +231,11 @@ class CardsView extends StatelessWidget {
 
   Widget _button({required VoidCallback? onPressed, required Widget child}) {
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(8.0),
       child: TextButton(
         onPressed: onPressed,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(8.0),
           child: child,
         ),
       ),
@@ -196,15 +245,7 @@ class CardsView extends StatelessWidget {
   Widget _cardsList() {
     return Consumer(
       builder: (context, ref, child) {
-        var provider = unusedCards;
-        final cardsFilter = ref.watch(filter);
-        if (cardsFilter == 'all') {
-          provider = cards;
-        } else if (cardsFilter == 'used') {
-          provider = usedCards;
-        }
-
-        return ref.watch(provider).when(
+        return ref.watch(ref.watch(activeCards)).when(
               loading: () => const SizedBox(
                 width: 32,
                 height: 32,
@@ -234,7 +275,7 @@ class CardsView extends StatelessWidget {
   void _importCards(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => CustomDialog(
+      builder: (_) => CustomDialog(
         child: Column(
           children: [
             const Expanded(
@@ -293,6 +334,7 @@ class CardsView extends StatelessWidget {
   }
 
   void _process(BuildContext context, String txt) {
+    print('process: $txt');
     final table = const CsvToListConverter(eol: '\n').convert(txt);
     final cards = getCards(table);
 

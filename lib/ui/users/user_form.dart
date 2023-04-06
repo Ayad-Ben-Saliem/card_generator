@@ -66,189 +66,198 @@ class UserForm extends ConsumerWidget {
       appBar: AppBar(
         title: Text(user == null ? 'Add User' : 'Edit User'),
       ),
-      body: Column(
-        children: [
-          const Spacer(),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 512),
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                Consumer(
-                  builder: (context, ref, child) {
-                    return DisableWidget(
-                      disable: changePassword,
-                      child: CustomTextField(
-                        text: user?.name,
-                        decoration: const InputDecoration(labelText: 'Name'),
-                        onChanged: (txt) => ref.read(name.notifier).state = txt,
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(width: 8),
-                Consumer(
-                  builder: (context, ref, child) {
-                    return Text(
-                      ref.watch(nameMessage) ?? '',
-                      style: errorTextStyle(context),
-                    );
-                  },
-                ),
-                const SizedBox(height: 16),
-                Consumer(
-                  builder: (context, ref, child) {
-                    return DisableWidget(
-                      disable: changePassword,
-                      child: CustomTextField(
-                        text: user?.email,
-                        decoration: const InputDecoration(labelText: 'Email'),
-                        onChanged: (txt) =>
-                            ref.read(email.notifier).state = txt,
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(width: 8),
-                Consumer(
-                  builder: (context, ref, child) {
-                    return Text(
-                      ref.watch(emailMessage) ?? '',
-                      style: errorTextStyle(context),
-                    );
-                  },
-                ),
-                const SizedBox(height: 16),
-                if (user == null || changePassword)
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Consumer(
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: Align(
+                alignment: Alignment.center,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 512),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Consumer(
                           builder: (context, ref, child) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomTextField(
-                                  obscureText: ref.watch(obscurePasswords),
-                                  passwordField: true,
-                                  onObscureTextChanged: (obscure) {
-                                    ref.read(obscurePasswords.notifier).state =
-                                        obscure;
-                                  },
-                                  decoration: const InputDecoration(
-                                    labelText: 'Password',
-                                  ),
-                                  onChanged: (txt) =>
-                                      ref.read(password.notifier).state = txt,
-                                ),
-                                const SizedBox(width: 8),
-                                Consumer(
+                            return DisableWidget(
+                              disable: changePassword,
+                              child: CustomTextField(
+                                text: user?.name,
+                                decoration: const InputDecoration(labelText: 'Name'),
+                                onChanged: (txt) => ref.read(name.notifier).state = txt,
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        Consumer(
+                          builder: (context, ref, child) {
+                            return Text(
+                              ref.watch(nameMessage) ?? '',
+                              style: errorTextStyle(context),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        Consumer(
+                          builder: (context, ref, child) {
+                            return DisableWidget(
+                              disable: changePassword,
+                              child: CustomTextField(
+                                text: user?.email,
+                                decoration: const InputDecoration(labelText: 'Email'),
+                                onChanged: (txt) =>
+                                    ref.read(email.notifier).state = txt,
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        Consumer(
+                          builder: (context, ref, child) {
+                            return Text(
+                              ref.watch(emailMessage) ?? '',
+                              style: errorTextStyle(context),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        if (user == null || changePassword)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Consumer(
                                   builder: (context, ref, child) {
-                                    return Text(
-                                      ref.watch(nameMessage) ?? '',
-                                      style: errorTextStyle(context),
+                                    return Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        CustomTextField(
+                                          obscureText: ref.watch(obscurePasswords),
+                                          passwordField: true,
+                                          onObscureTextChanged: (obscure) {
+                                            ref.read(obscurePasswords.notifier).state =
+                                                obscure;
+                                          },
+                                          decoration: const InputDecoration(
+                                            labelText: 'Password',
+                                          ),
+                                          onChanged: (txt) =>
+                                              ref.read(password.notifier).state = txt,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Consumer(
+                                          builder: (context, ref, child) {
+                                            return Text(
+                                              ref.watch(nameMessage) ?? '',
+                                              style: errorTextStyle(context),
+                                            );
+                                          },
+                                        ),
+                                      ],
                                     );
                                   },
                                 ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Consumer(
-                          builder: (context, ref, child) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomTextField(
-                                  obscureText: ref.watch(obscurePasswords),
-                                  passwordField: true,
-                                  onObscureTextChanged: (obscure) {
-                                    ref.read(obscurePasswords.notifier).state =
-                                        obscure;
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Consumer(
+                                  builder: (context, ref, child) {
+                                    return Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        CustomTextField(
+                                          obscureText: ref.watch(obscurePasswords),
+                                          passwordField: true,
+                                          onObscureTextChanged: (obscure) {
+                                            ref.read(obscurePasswords.notifier).state =
+                                                obscure;
+                                          },
+                                          decoration: const InputDecoration(
+                                            labelText: 'Confirm Password',
+                                          ),
+                                          onChanged: (txt) {
+                                            ref.read(confirmPassword.notifier).state =
+                                                txt;
+                                          },
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          ref.watch(mismatchPassword) ?? '',
+                                          style: errorTextStyle(context),
+                                        ),
+                                      ],
+                                    );
                                   },
-                                  decoration: const InputDecoration(
-                                    labelText: 'Confirm Password',
-                                  ),
-                                  onChanged: (txt) {
-                                    ref.read(confirmPassword.notifier).state =
-                                        txt;
-                                  },
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  ref.watch(mismatchPassword) ?? '',
-                                  style: errorTextStyle(context),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-              ],
-            ),
-          ),
-          const Spacer(),
-          const Divider(height: 0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              if (canCancel)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: () =>
-                        popOnComplete ? Navigator.pop(context) : null,
-                    child: const Text('Cancel'),
-                  ),
-                ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Consumer(
-                  builder: (context, ref, child) {
-                    return ElevatedButton(
-                      onPressed: () {
-                        try {
-                          save(ref).then((user) {
-                            if (user != null) onSave?.call(user);
-                            if (popOnComplete) Navigator.pop(context, user);
-                          });
-                        } catch (error, stackTrace) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: ConstrainedBox(
-                                constraints:
-                                    const BoxConstraints(maxHeight: 100),
-                                child: Column(
-                                  children: [
-                                    Text('$error'),
-                                    const SizedBox(height: 16),
-                                    Expanded(
-                                      child: ListView(
-                                        children: [Text('$stackTrace')],
-                                      ),
-                                    ),
-                                  ],
                                 ),
                               ),
-                            ),
-                          );
-                        }
-                      },
-                      child: const Text('Save'),
-                    );
-                  },
+                            ],
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ],
-          ),
-        ],
+            ),
+            const Divider(height: 0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (canCancel)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      onPressed: () =>
+                          popOnComplete ? Navigator.pop(context) : null,
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Consumer(
+                    builder: (context, ref, child) {
+                      return ElevatedButton(
+                        onPressed: () {
+                          try {
+                            save(ref).then((user) {
+                              if (user != null) onSave?.call(user);
+                              if (popOnComplete) Navigator.pop(context, user);
+                            });
+                          } catch (error, stackTrace) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: ConstrainedBox(
+                                  constraints:
+                                      const BoxConstraints(maxHeight: 100),
+                                  child: Column(
+                                    children: [
+                                      Text('$error'),
+                                      const SizedBox(height: 16),
+                                      Expanded(
+                                        child: ListView(
+                                          children: [Text('$stackTrace')],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        child: const Text('Save'),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

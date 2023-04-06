@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:card_generator/models/card.dart';
+import 'package:card_generator/utils.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/widgets.dart';
 import 'package:flutter/material.dart' as flutter;
@@ -14,14 +15,15 @@ abstract class Reporting {
   ) async {
     final doc = Document();
 
-    final font = Font.ttf(
-      await rootBundle.load("assets/fonts/HacenTunisia.ttf"),
+    // final font = await PdfGoogleFonts.notoSansArabicRegular();
+    final font = await fontFromAssetBundle('assets/fonts/HacenTunisia.ttf');
+    final manassa = await imageFromAssetBundle(
+      'assets/images/manassa.png',
     );
-    final imageProvider = await imageFromAssetBundle(
+    final almadar = await imageFromAssetBundle(
       'assets/images/almadar.png',
     );
 
-    print('cards.length: ${cards.length}');
     for (var card in cards) {
       doc.addPage(
         Page(
@@ -29,7 +31,7 @@ abstract class Reporting {
           textDirection: TextDirection.rtl,
           pageFormat: format,
           margin: const EdgeInsets.all(4),
-          build: (context) => _generateCard(card, imageProvider, font),
+          build: (context) => _generateCard(card, font, manassa, almadar),
         ),
       );
     }
@@ -38,16 +40,20 @@ abstract class Reporting {
   }
 
   static Widget _generateCard(
-      Card card, ImageProvider imageProvider, Font font) {
+    Card card,
+    Font font,
+    ImageProvider manassa,
+    ImageProvider almadar,
+  ) {
     final textStyle = TextStyle(font: font);
 
     return Column(
       children: [
         Row(),
-        Image(imageProvider, width: 100),
+        Image(almadar, width: 64),
         Text(
-          'المدار الجديد ${card.value} د.ل',
-          style: textStyle.copyWith(fontWeight: FontWeight.bold),
+          'المدار الجديد ${Utils.readableMoney(card.value)} د.ل',
+          style: textStyle.copyWith(),
         ),
         Text(
           'الرقم السري',
@@ -63,12 +69,16 @@ abstract class Reporting {
         ),
         Text(
           'SERIAL NUMBER',
-          style: textStyle.copyWith(fontSize: 10),
+          style: textStyle.copyWith(fontSize: 8),
         ),
         Text(
           card.serial,
           style: textStyle.copyWith(fontSize: 11, fontWeight: FontWeight.bold),
         ),
+        // Text(
+        //   'شركة منصة للتقنية',
+        //   style: textStyle.copyWith(fontSize: 8),
+        // ),
       ],
     );
   }

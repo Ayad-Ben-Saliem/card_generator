@@ -6,8 +6,8 @@ import 'package:card_generator/ui/custom-text-field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final emailProvider = StateProvider((ref) => 'ayad.bslm@gmail.com');
-final _password = StateProvider((ref) => 'A5355850d.');
+final emailProvider = StateProvider((ref) => '');
+final _password = StateProvider((ref) => '');
 final _errorMessage = StateProvider((ref) => '');
 
 class LoginPage extends StatelessWidget {

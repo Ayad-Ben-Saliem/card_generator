@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class CustomDialog extends StatelessWidget {
@@ -6,6 +8,8 @@ class CustomDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if(Platform.isAndroid || Platform.isIOS) return Dialog(child: child);
+
     return Dialog(
       child: LayoutBuilder(
         builder: (_, constraints) {
