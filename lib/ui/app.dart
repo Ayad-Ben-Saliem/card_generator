@@ -3,13 +3,15 @@ import 'package:card_generator/services/users_service.dart';
 import 'package:card_generator/ui/auth/login_page.dart';
 import 'package:card_generator/ui/custom_future_builder.dart';
 import 'package:card_generator/ui/users/user_form.dart';
-import 'package:card_generator/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'home_page.dart';
 
-final authenticatedUser = StateProvider<User?>((ref) => null);
+final authenticatedUser = StateProvider<User?>((ref) {
+  UsersService.init();
+  return null;
+});
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -18,43 +20,12 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Applied Sciences',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: Consumer(
         builder: (context, ref, child) {
-          final currentUser = ref.watch(authenticatedUser);
-
-          return CustomFutureBuilder(
-            future: UsersService.countUsers(),
-            builder: (context, snapshot) {
-              if (snapshot.data == 0) {
-                const user = User(
-                  name: 'Admin',
-                  email: 'ayad.bslm@gmail.com',
-                  password: 'Ayad.92',
-                  superUser: true,
-                );
-                UsersService.saveUser(user).then((user) {
-                  ref.read(authenticatedUser.notifier).state = user;
-                });
-
-                return Container();
-
-                return UserForm(
-                  popOnComplete: false,
-                  canCancel: false,
-                  onSave: (user) {
-                    ref.read(authenticatedUser.notifier).state = user;
-                  },
-                );
-              }
-
-              return (currentUser == null)
-                  ? const LoginPage()
-                  : const HomePage();
-            },
-          );
+          return (ref.watch(authenticatedUser) == null)
+              ? const LoginPage()
+              : const HomePage();
         },
       ),
     );
