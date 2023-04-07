@@ -4,6 +4,7 @@ import 'package:card_generator/equatable_list.dart';
 import 'package:card_generator/models/card.dart';
 import 'package:card_generator/services/cards_service.dart';
 import 'package:card_generator/ui/cards/cards_list.dart';
+import 'package:card_generator/ui/cards/import_cards.dart';
 import 'package:card_generator/ui/cards/import_cards_dialog.dart';
 import 'package:card_generator/ui/cards/pdf_cards_view.dart';
 import 'package:card_generator/ui/custom-text-field.dart';
@@ -275,97 +276,7 @@ class CardsView extends StatelessWidget {
   void _importCards(BuildContext context) {
     showDialog(
       context: context,
-      builder: (_) => CustomDialog(
-        child: Column(
-          children: [
-            const Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: CustomTextField(maxLines: 1000),
-              ),
-            ),
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _importFromFile(context);
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Import From File'),
-                  ),
-                ),
-                const Spacer(),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _process(
-                        context,
-                        // TODO
-                        '',
-                      );
-                    },
-                    child: const Text('Import'),
-                  ),
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _importFromFile(BuildContext context) {
-    FilePicker.platform.pickFiles(
-      withData: true,
-      type: FileType.custom,
-      allowedExtensions: ['txt', 'csv'],
-    ).then((result) {
-      if (result != null) {
-        final file = result.files.first;
-        if (file.bytes == null) return _showMessage(context, 'No data found');
-
-        _process(context, const Utf8Decoder().convert(file.bytes!.toList()));
-      }
-    });
-  }
-
-  void _process(BuildContext context, String txt) {
-    print('process: $txt');
-    final table = const CsvToListConverter(eol: '\n').convert(txt);
-    final cards = getCards(table);
-
-    _importCardsDialog(context, cards);
-  }
-
-  List<Card> getCards(List data) {
-    if (data is List<List>) data = tableToJson(data);
-    return [for (final obj in data) Card.fromJson(obj)];
-  }
-
-  List<JsonMap> tableToJson(List<List> data) {
-    return [
-      for (var record in data)
-        {
-          'value': 5, // TODO: to change
-          'code': '${record[0]}',
-          'serial': '${record[1]}',
-        },
-    ];
-  }
-
-  void _importCardsDialog(BuildContext context, List<Card> cards) {
-    if (cards.isEmpty) {
-      return _showMessage(context, 'Invalid data, no cards to import');
-    }
-    showDialog(
-      context: context,
-      builder: (_) {
-        return ImportCardsDialog(cards: cards);
-      },
+      builder: (_) => const CustomDialog(child: ImportCards()),
     );
   }
 
@@ -469,10 +380,5 @@ class CardsView extends StatelessWidget {
         );
       },
     );
-  }
-
-  void _showMessage(BuildContext context, String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
   }
 }

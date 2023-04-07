@@ -1,5 +1,6 @@
 import 'package:card_generator/ui/app.dart';
 import 'package:card_generator/ui/cards/cards_view.dart';
+import 'package:card_generator/ui/cards/import_cards.dart';
 import 'package:card_generator/ui/users/users_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +17,7 @@ class HomePage extends StatelessWidget {
           drawer: ref.watch(authenticatedUser)?.superUser == true
               ? _drawer()
               : null,
-          body: const CardsView(),
+          body: const ImportCards(),
         );
       },
     );

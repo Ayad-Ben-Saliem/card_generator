@@ -4,6 +4,20 @@ import 'package:card_generator/utils.dart';
 import 'package:isar/isar.dart';
 
 abstract class UsersService {
+
+  static void init() async {
+    if (await countUsers() == 0) {
+      UsersService.saveUser(
+        const User(
+          name: 'Admin',
+          email: 'ayad.bslm@gmail.com',
+          password: 'Ayad.92',
+          superUser: true,
+        ),
+      );
+    }
+  }
+
   static Future<User?> getUser(Id id) async {
     return await db.writeTxn(() => db.Users.get(id));
   }

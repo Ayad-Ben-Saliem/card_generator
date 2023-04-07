@@ -87,9 +87,28 @@ abstract class CardsService {
   }
 
   static void checkLimits() async {
-    final x =
-        await db.Cards.filter().idGreaterThan(100000).limit(1).findFirst();
-    if (x != null) throw Exception('Limits Exceeded');
+    final license = await getLicence();
+    if (license == null) throw Exception('No license found!!!');
+
+    if (license.validUntil != null) {
+      if (license.validUntil!.isBefore(DateTime.now())) {
+        throw Exception(
+          'License expired on (${license.validUntil!.toIso8601String()})',
+        );
+      }
+    }
+    if (license.maxCardNumber != null) {
+      final maxCardNumber = license.maxCardNumber!;
+      if (maxCardNumber <= await countCards()) {
+        throw Exception(
+          'License expired. reach max cards number ($maxCardNumber)',
+        );
+      }
+    }
+
+    // final x =
+    //     await db.Cards.filter().idGreaterThan(100000).limit(1).findFirst();
+    // if (x != null) throw Exception('Limits Exceeded');
   }
 
   static Future<List<Card>> saveCards(List<Card> cards) async {
