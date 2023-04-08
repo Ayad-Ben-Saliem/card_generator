@@ -1,5 +1,6 @@
 import 'package:card_generator/models/card.dart';
 import 'package:card_generator/pdf/reporting.dart';
+import 'package:card_generator/ui/custom_future_builder.dart';
 import 'package:card_generator/ui/custom_switch.dart';
 import 'package:flutter/material.dart' hide Card;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,20 +19,9 @@ class PdfCardsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        return FutureBuilder(
+        return CustomFutureBuilder(
           future: Reporting.generateCards(cards, ref.watch(pageFormat)),
           builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Column(
-                children: [
-                  Text('${snapshot.error}'),
-                  const Divider(),
-                  SingleChildScrollView(child: Text('${snapshot.stackTrace}')),
-                ],
-              );
-            }
-            if (!snapshot.hasData) return const CircularProgressIndicator();
-
             final data = snapshot.data!;
 
             return Column(
@@ -39,25 +29,34 @@ class PdfCardsView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    IconButton(
-                      onPressed: () =>
-                          Printing.layoutPdf(onLayout: (format) => data),
-                      icon: const Icon(Icons.print_outlined),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: IconButton(
+                        onPressed: () =>
+                            Printing.layoutPdf(onLayout: (format) => data),
+                        icon: const Icon(Icons.print_outlined),
+                      ),
                     ),
-                    CustomSwitch(
-                      choice1: PdfPageFormat.roll57,
-                      choice2: PdfPageFormat.roll80,
-                      choice1Text: 'Role57',
-                      choice2Text: 'Role80',
-                      choice2Color: Theme.of(context).colorScheme.primary,
-                      onChange: (value) {
-                        ref.read(pageFormat.notifier).state = value;
-                      },
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CustomSwitch(
+                        choice1: PdfPageFormat.roll57,
+                        choice2: PdfPageFormat.roll80,
+                        choice1Text: 'Role57',
+                        choice2Text: 'Role80',
+                        choice2Color: Theme.of(context).colorScheme.primary,
+                        onChange: (value) {
+                          ref.read(pageFormat.notifier).state = value;
+                        },
+                      ),
                     ),
-                    IconButton(
-                      onPressed: () =>
-                          Printing.sharePdf(bytes: data, filename: 'Card.pdf'),
-                      icon: const Icon(Icons.share),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: IconButton(
+                        onPressed: () =>
+                            Printing.sharePdf(bytes: data, filename: 'Card.pdf'),
+                        icon: const Icon(Icons.share),
+                      ),
                     ),
                   ],
                 ),
@@ -71,20 +70,6 @@ class PdfCardsView extends StatelessWidget {
           },
         );
       },
-    );
-
-    return PdfPreview(
-      initialPageFormat: PdfPageFormat.roll57,
-      // canChangePageFormat: false,
-      canChangeOrientation: false,
-      canDebug: false,
-      // actions: [],
-      dpi: 72,
-      pageFormats: const {
-        'Role80': PdfPageFormat.roll80,
-        'Role57': PdfPageFormat.roll57,
-      },
-      build: (PdfPageFormat format) => Reporting.generateCards(cards, format),
     );
   }
 }

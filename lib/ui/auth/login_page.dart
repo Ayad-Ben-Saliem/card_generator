@@ -89,6 +89,7 @@ class LoginPage extends StatelessWidget {
                 builder: (context, ref, child) {
                   return Text(
                     ref.watch(_errorMessage),
+                    textAlign: TextAlign.center,
                     style: errorTextStyle(context),
                   );
                 },
@@ -111,8 +112,11 @@ class LoginPage extends StatelessWidget {
           const SnackBar(content: Text('Login failed')),
         );
       } else {
+        ref.read(emailProvider.notifier).state = '';
+        ref.read(_password.notifier).state = '';
         ref.read(_errorMessage.notifier).state = '';
         ref.read(authenticatedUser.notifier).state = user;
+        Navigator.pop(context);
       }
     });
   }

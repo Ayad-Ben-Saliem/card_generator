@@ -1,6 +1,5 @@
 import 'package:card_generator/models/card.dart';
 import 'package:card_generator/storage/db.dart';
-import 'package:card_generator/utils.dart';
 import 'package:isar/isar.dart';
 
 abstract class CardsService {
@@ -90,18 +89,18 @@ abstract class CardsService {
     final license = await getLicence();
     if (license == null) throw Exception('No license found!!!');
 
-    if (license.validUntil != null) {
-      if (license.validUntil!.isBefore(DateTime.now())) {
+    if (license.expirationDate != null) {
+      if (license.expirationDate!.isBefore(DateTime.now())) {
         throw Exception(
-          'License expired on (${license.validUntil!.toIso8601String()})',
+          'License expired on (${license.expirationDate!.toIso8601String()})',
         );
       }
     }
-    if (license.maxCardNumber != null) {
-      final maxCardNumber = license.maxCardNumber!;
-      if (maxCardNumber <= await countCards()) {
+    if (license.maxCardsNumber != null) {
+      final maxCardsNumber = license.maxCardsNumber!;
+      if (maxCardsNumber <= await countCards()) {
         throw Exception(
-          'License expired. reach max cards number ($maxCardNumber)',
+          'License expired. reach max cards number ($maxCardsNumber)',
         );
       }
     }
@@ -131,11 +130,20 @@ abstract class CardsService {
   //   });
   // }
 
-  static Future<Card?> useCard(Card card) async {
+  static Future<Card> useCard(Card card) async {
     card = card.copyWith(usedAt: DateTime.now());
     return db.writeTxn(() async {
       db.Cards.put(card);
       return card;
+    });
+  }
+
+  static Future<List<Card>> useCards(List<Card> cards) async {
+    final now = DateTime.now();
+    cards = cards.map((card) => card.copyWith(usedAt: now)).toList();
+    return db.writeTxn(() async {
+      db.Cards.putAll(cards);
+      return cards;
     });
   }
 

@@ -1,7 +1,7 @@
 import 'package:card_generator/models/user.dart';
 import 'package:card_generator/services/users_service.dart';
 import 'package:card_generator/storage/db.dart';
-import 'package:card_generator/ui/auth/login_page.dart';
+import 'package:card_generator/ui/error_page.dart';
 import 'package:card_generator/ui/home_page.dart';
 import 'package:card_generator/ui/license_page.dart';
 import 'package:flutter/material.dart' hide LicensePage;
@@ -12,11 +12,20 @@ final authenticatedUser = StateProvider<User?>((ref) {
   return null;
 });
 
-class App extends StatelessWidget {
+final restartAppKey = StateProvider((ref) => 0);
+
+void restartApp(WidgetRef ref) {
+  ref.read(restartAppKey.notifier).state++;
+}
+
+class App extends ConsumerWidget {
   const App({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context, ref) {
+    ref.watch(restartAppKey);
+    ref.watch(authenticatedUser);
+
     return MaterialApp(
       title: 'Cards Generator',
       theme: ThemeData(primarySwatch: Colors.blue),
@@ -24,23 +33,13 @@ class App extends StatelessWidget {
         future: getLicence(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Column(
-              children: [
-                Text('${snapshot.error}'),
-                const Divider(),
-                SingleChildScrollView(child: Text('${snapshot.stackTrace}')),
-              ],
+            return ErrorPage(
+              error: snapshot.error!,
+              stackTrace: snapshot.stackTrace,
             );
           }
           if (snapshot.data == null) return const LicensePage();
           return const HomePage();
-          return Consumer(
-            builder: (context, ref, child) {
-              return (ref.watch(authenticatedUser) == null)
-                  ? const LoginPage()
-                  : const HomePage();
-            },
-          );
         },
       ),
     );

@@ -16,10 +16,11 @@ final db = Isar.openSync([
 ]);
 
 Future<License?> getLicence() async {
+  // await storage.delete(key: 'license');
   final license = await storage.read(key: 'license');
   return (license != null) ? License.fromJson(json.decode(license)) : null;
 }
 
 Future<void> setLicence(License license) async {
-  return storage.write(key: 'license', value: '${license.toJson}');
+  return storage.write(key: 'license', value: json.encode(license.toJson));
 }

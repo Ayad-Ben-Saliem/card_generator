@@ -80,6 +80,18 @@ class ImportCards extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: Consumer(
                     builder: (context, ref, child) {
+                      final txt = _prepareText(ref.watch(cardsText));
+                      final cardsNumber = txt.split('\n').length;
+                      var text = '$cardsNumber Card';
+                      if(cardsNumber > 1) text += 's';
+                      return Text(text);
+                    }
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Consumer(
+                    builder: (context, ref, child) {
                       return ElevatedButton(
                         onPressed: () async {
                           final txt = await _getFromFile(context);
@@ -100,14 +112,12 @@ class ImportCards extends StatelessWidget {
                         onPressed: ref.watch(validImport)
                             ? () async {
                                 ref.read(importing.notifier).state = true;
-                                await _process(
+                                _process(
                                   context,
                                   ref.read(cardsText),
                                   ref.read(cardsValue),
-                                ).whenComplete(
-                                  () => ref.read(importing.notifier).state =
-                                      false,
                                 );
+                                ref.read(importing.notifier).state = false;
                               }
                             : null,
                         child: const Text('Import'),
@@ -134,19 +144,29 @@ class ImportCards extends StatelessWidget {
       if (file.bytes != null) {
         return const Utf8Decoder().convert(file.bytes!.toList());
       }
-      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-        _showMessage(context, 'No data found');
-      });
+      (() => Utils.showErrorMessage(context, 'No data found'))();
     }
     return null;
   }
 
-  Future<void> _process(BuildContext context, String txt, String value) async {
+  void _process(BuildContext context, String txt, String value) {
+    txt = _prepareText(txt);
     final table = const CsvToListConverter(eol: '\n').convert(txt);
-    final cards = await CardsService.saveCards(_prepareCards(table, value));
+    final cards = _prepareCards(table, value);
+    CardsService.useCards(cards);
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       _pdfCardsViewDialog(context, cards);
     });
+  }
+
+  String _prepareText(String txt) {
+    txt = txt.replaceAll(' ', '\n');
+    txt = txt
+        .split(RegExp(r'\r?\n|\r'))
+        .where((s) => s.trim().isNotEmpty)
+        .join('\n');
+
+    return txt;
   }
 
   List<Card> _prepareCards(List data, String value) {
@@ -167,16 +187,14 @@ class ImportCards extends StatelessWidget {
 
   void _pdfCardsViewDialog(BuildContext context, List<Card> cards) {
     if (cards.isEmpty) {
-      return _showMessage(context, 'Invalid data, no cards to import');
+      return Utils.showErrorMessage(
+        context,
+        'Invalid data, no cards to import',
+      );
     }
     showDialog(
       context: context,
       builder: (_) => CustomDialog(child: PdfCardsView(cards: cards)),
     );
-  }
-
-  void _showMessage(BuildContext context, String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
   }
 }

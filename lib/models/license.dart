@@ -3,29 +3,29 @@ import 'package:equatable/equatable.dart';
 
 class License extends Equatable {
   final String name;
-  final int? maxCardNumber;
-  final DateTime? validUntil;
+  final int? maxCardsNumber;
+  final DateTime? expirationDate;
 
   const License({
     required this.name,
-    this.maxCardNumber,
-    this.validUntil,
+    this.maxCardsNumber,
+    this.expirationDate,
   });
 
   License.fromJson(JsonMap json)
       : name = json['name'],
-        maxCardNumber = json['maxCardNumber'],
-        validUntil = DateTime.tryParse(json['validUntil'] ?? '');
+        maxCardsNumber = json['maxCardsNumber'],
+        expirationDate = DateTime.tryParse(json['expirationDate'] ?? '');
 
   License copyWith({
     String? name,
-    int? maxCardNumber,
-    DateTime? validUntil,
+    int? maxCardsNumber,
+    DateTime? expirationDate,
   }) =>
       License(
         name: name ?? this.name,
-        maxCardNumber: maxCardNumber ?? this.maxCardNumber,
-        validUntil: validUntil ?? this.validUntil,
+        maxCardsNumber: maxCardsNumber ?? this.maxCardsNumber,
+        expirationDate: expirationDate ?? this.expirationDate,
       );
 
   @override
@@ -33,14 +33,14 @@ class License extends Equatable {
 
   JsonMap get toJson => {
         'name': name,
-        'maxCardNumber': maxCardNumber,
-        'validUntil': validUntil,
+        'maxCardsNumber': maxCardsNumber,
+        'expirationDate': expirationDate?.toIso8601String(),
       };
 
   @override
   List<Object?> get props => [
         name,
-        maxCardNumber,
-        validUntil,
+        maxCardsNumber,
+        expirationDate,
       ];
 }

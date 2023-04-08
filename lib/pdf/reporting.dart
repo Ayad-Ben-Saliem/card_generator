@@ -4,7 +4,6 @@ import 'package:card_generator/models/card.dart';
 import 'package:card_generator/utils.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/widgets.dart';
-import 'package:flutter/material.dart' as flutter;
 import 'package:printing/printing.dart';
 import 'package:pdf/pdf.dart';
 
@@ -50,6 +49,7 @@ abstract class Reporting {
     return Column(
       children: [
         Row(),
+        Image(manassa, width: 32),
         Image(almadar, width: 64),
         Text(
           'المدار الجديد ${Utils.readableMoney(card.value)} د.ل',
