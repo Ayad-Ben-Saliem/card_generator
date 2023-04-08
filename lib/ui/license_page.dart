@@ -3,6 +3,7 @@ import 'package:card_generator/storage/db.dart';
 import 'package:card_generator/ui/app.dart';
 import 'package:card_generator/ui/custom-text-field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:date_field/date_field.dart';
 
@@ -81,9 +82,7 @@ class LicensePage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: CustomTextField(
-        text: (ref.watch(license.select((license) => license.maxCardsNumber)) ??
-                '')
-            .toString(),
+        text: (ref.watch(license).maxCardsNumber ?? '').toString(),
         onChanged: (txt) {
           ref.read(license.notifier).state =
               ref.read(license).copyWith(maxCardsNumber: int.tryParse(txt));
@@ -92,6 +91,10 @@ class LicensePage extends StatelessWidget {
           () => ref.read(license.notifier).state =
               ref.read(license).copyWith(maxCardsNumber: null),
         ).copyWith(labelText: 'Max Cards Number'),
+        keyboardType: TextInputType.number,
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r"^\d*")),
+        ],
       ),
     );
   }

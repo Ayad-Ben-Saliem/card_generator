@@ -29,7 +29,7 @@ abstract class Reporting {
           theme: ThemeData.withFont(base: font),
           textDirection: TextDirection.rtl,
           pageFormat: format,
-          margin: const EdgeInsets.all(4),
+          margin: const EdgeInsets.all(0),
           build: (context) => _generateCard(card, font, manassa, almadar),
         ),
       );
@@ -55,25 +55,48 @@ abstract class Reporting {
           'المدار الجديد ${Utils.readableMoney(card.value)} د.ل',
           style: textStyle.copyWith(),
         ),
-        Text(
-          'الرقم السري',
-          style: textStyle.copyWith(fontWeight: FontWeight.bold),
-        ),
-        Text(
-          card.code,
-          style: textStyle.copyWith(fontSize: 12, fontWeight: FontWeight.bold),
+        // Text(
+        //   'الرقم السري',
+        //   style: textStyle.copyWith(fontWeight: FontWeight.bold),
+        // ),
+        // Text(
+        //   card.code,
+        //   style: textStyle.copyWith(fontSize: 12, fontWeight: FontWeight.bold),
+        // ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '(${card.code})',
+              style:
+                  textStyle.copyWith(fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(width: 4),
+            Text(
+              'الرقم السري',
+              style: textStyle.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
         Text(
           'طريقة التعبئة   #الرقم السري*112*',
           style: textStyle.copyWith(fontSize: 10),
         ),
-        Text(
-          'SERIAL NUMBER',
-          style: textStyle.copyWith(fontSize: 8),
-        ),
-        Text(
-          card.serial,
-          style: textStyle.copyWith(fontSize: 11, fontWeight: FontWeight.bold),
+        // Text(
+        //   'SERIAL NUMBER',
+        //   style: textStyle.copyWith(fontSize: 8),
+        // ),
+        // Text(
+        //   card.serial,
+        //   style: textStyle.copyWith(fontSize: 11, fontWeight: FontWeight.bold),
+        // ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('(${card.serial})', style: textStyle.copyWith(fontSize: 8)),
+            SizedBox(width: 4),
+            Text('الرقم التسلسلي', style: textStyle.copyWith(fontSize: 8)),
+          ],
         ),
         // Text(
         //   'شركة منصة للتقنية',

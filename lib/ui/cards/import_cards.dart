@@ -120,7 +120,7 @@ class ImportCards extends StatelessWidget {
                                 ref.read(importing.notifier).state = false;
                               }
                             : null,
-                        child: const Text('Import'),
+                        child: const Text('Convert'),
                       );
                     },
                   ),
